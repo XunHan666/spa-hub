@@ -1,0 +1,437 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Owner Dashboard – Beautiful Care</title>
+  <meta name="description" content="Owner dashboard for managing multi-spa: services, staff, bookings, reviews, coupons" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>window.REQUIRED_ROLES = ['owner'];</script>
+  <script type="module" src="js/guard.js"></script>
+  <link rel="stylesheet" href="css/styles.css">
+  <!--
+    :root{
+      --bg:#fffaf3; --card:#ffffff; --ink:#2c2a27; --muted:#6b625a; --brand:#c8b273; --accent:#d4af37; --success:#22c55e; --warning:#f59e0b; --danger:#ef4444;
+      --radius:16px; --shadow:0 12px 30px rgba(0,0,0,.06); --container:1240px;
+      --grad:linear-gradient(135deg, #d4af37, #c8b273, #b08968);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial}
+
+    /* Topbar (match customer style) */
+    .topbar{position:sticky;top:0;z-index:50;background:#fff;box-shadow:0 1px 0 #ececf3}
+    .topwrap{max-width:var(--container);margin:0 auto;display:flex;align-items:center;gap:18px;padding:14px 20px}
+    .brand{display:flex;align-items:center;gap:10px;font-weight:800;color:var(--brand);text-decoration:none}
+    .brand-logo{width:36px;height:36px;border-radius:10px;background:var(--grad)}
+    .spa-switch{margin-left:auto;display:flex;align-items:center;gap:8px}
+    select, input, textarea{font:inherit}
+    .select{border:1px solid #e6e6f2;background:#fff;border-radius:10px;padding:9px 12px}
+    .btn{appearance:none;border:0;border-radius:12px;padding:10px 14px;font-weight:700;cursor:pointer}
+    .btn.primary{background:var(--brand);color:#fff}
+    .btn.ghost{background:#fff;border:1px solid #e6e6f2;color:var(--brand)}
+
+    /* Layout */
+    .layout{max-width:var(--container);margin:18px auto;display:grid;grid-template-columns:220px 1fr;gap:18px;padding:0 20px}
+    .side{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:14px}
+    .side h4{margin:6px 10px 10px;font-size:14px;text-transform:uppercase;color:var(--muted);letter-spacing:.06em}
+    .nav{display:flex;flex-direction:column}
+    .nav button{all:unset;display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;color:#374151;cursor:pointer}
+    .nav button.active, .nav button:hover{background:#fff7e6;color:var(--brand)}
+
+    .content{display:grid;gap:18px}
+    .hero{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+    .hero .cover{background:var(--grad);height:120px}
+    .hero .in{padding:16px 18px;display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+    .badge{border-radius:999px;padding:6px 10px;font-weight:700;font-size:12px}
+    .badge.live{background:#ecfdf5;color:#065f46}
+    .badge.pause{background:#fff7ed;color:#92400e}
+
+    .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+    .card{background:#fff;border-radius:14px;border:1px solid #ececf4;padding:14px}
+    .card h3{margin:0 0 4px;font-size:14px;color:#6b7280}
+    .metric{font-size:24px;font-weight:800}
+
+    .panel{background:#fff;border-radius:14px;box-shadow:var(--shadow);padding:16px}
+    .panel h3{margin:0 0 10px}
+
+    table{width:100%;border-collapse:collapse}
+    th, td{padding:10px;border-bottom:1px solid #eee;text-align:left}
+    th{font-size:12px;color:#6b7280;text-transform:uppercase;letter-spacing:.06em}
+
+    .toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin-bottom:10px}
+    .input{border:1px solid #e6e6f2;border-radius:10px;padding:9px 12px;background:#fff}
+
+    /* Calendar (timetable-like) */
+    .calendar{display:grid;grid-template-columns:80px repeat(7,1fr);border:1px solid #eee;border-radius:14px;overflow:hidden}
+    .cal-head{display:contents}
+    .cal-head div{padding:10px;background:#fafafd;border-right:1px solid #eee;font-weight:700;text-align:center}
+    .cal-time{background:#fafafa;border-right:1px solid #eee}
+    .cal-grid{display:contents}
+    .slot{height:56px;border-right:1px solid #eee;border-top:1px solid #eee;position:relative}
+    .event{position:absolute;left:6px;right:6px;top:6px;bottom:6px;background:#fff7e6;border:1px solid #ffe6b3;border-radius:10px;padding:6px;font-size:12px}
+
+    /* Forms */
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .actions{display:flex;gap:8px}
+    .tag{display:inline-flex;align-items:center;gap:6px;border:1px solid #e6e6f2;border-radius:999px;padding:6px 10px;background:#fff}
+    .rank{font-weight:700}
+    .rank.gold{color:#ca8a04}
+    .rank.diamond{color:#0891b2}
+
+    @media (max-width:1024px){.cards{grid-template-columns:repeat(2,1fr)}.layout{grid-template-columns:1fr}.side{order:2}.content{order:1}}
+  -->
+</head>
+<body>
+  <div id="app-header"></div>
+  <script type="module">
+    import { renderHeader } from './js/ui.js';
+    renderHeader();
+  </script>
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="topwrap">
+      <div class="brand"><div class="brand-logo"></div> Beautiful Care – Owner</div>
+      <div class="spa-switch">
+        <span class="muted">Spa của tôi:</span>
+        <select class="select" id="spaSelect"></select>
+        <button class="btn ghost" id="btnAddSpa">+ Thêm spa</button>
+        <button class="btn primary" id="btnToggleStatus">Tạm nghỉ</button>
+        <button class="btn ghost" id="btnLogout">Đăng xuất</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="layout">
+    <!-- Sidebar -->
+    <aside class="side">
+      <h4>Quản trị</h4>
+      <nav class="nav" id="sideNav">
+        <button data-tab="dashboard" class="active">🏠 Dashboard</button>
+        <button data-tab="calendar">📅 Lịch</button>
+        <button data-tab="bookings">🧾 Bookings</button>
+        <button data-tab="services">💅 Dịch vụ</button>
+        <button data-tab="staff">👩‍🔧 Nhân viên</button>
+        <button data-tab="reviews">⭐ Reviews</button>
+        <button data-tab="customers">👥 Khách hàng</button>
+        <button data-tab="coupons">🎟️ Coupons</button>
+        <button data-tab="settings">⚙️ Cài đặt Spa</button>
+      </nav>
+    </aside>
+
+    <!-- Main content -->
+    <main class="content">
+      <!-- HERO / STATUS -->
+      <section class="hero">
+        <div class="cover"></div>
+        <div class="in">
+          <div style="flex:1 1 auto">
+            <div style="font-size:24px;font-weight:800" id="spaName">—</div>
+            <div class="muted" id="spaAddr">—</div>
+          </div>
+          <span id="spaStatus" class="badge live">Đang hoạt động</span>
+          <div class="tag">Tổng số spa sở hữu: <strong id="spaCount" style="margin-left:6px">0</strong></div>
+        </div>
+      </section>
+
+      <!-- DASHBOARD TAB -->
+      <section id="tab-dashboard">
+        <div class="cards">
+          <div class="card"><h3>Doanh thu tháng này</h3><div class="metric" id="mRevenue">—</div></div>
+          <div class="card"><h3>Lợi nhuận tháng này</h3><div class="metric" id="mProfit">—</div></div>
+          <div class="card"><h3>Booking (tháng)</h3><div class="metric" id="mBookings">—</div></div>
+          <div class="card"><h3>Khách quay lại</h3><div class="metric" id="mReturning">—</div></div>
+        </div>
+        <div class="panel">
+          <div class="toolbar"><h3>Doanh thu & Lợi nhuận theo tháng</h3></div>
+          <canvas id="chartRevenue" height="90"></canvas>
+        </div>
+        <div class="panel" style="display:grid;grid-template-columns:1.2fr .8fr;gap:14px">
+          <div>
+            <h3>Top dịch vụ</h3>
+            <table id="tblTopServices"><thead><tr><th>Dịch vụ</th><th>Đơn</th><th>Doanh thu</th></tr></thead><tbody></tbody></table>
+          </div>
+          <div>
+            <h3>Hiệu suất nhân viên</h3>
+            <table id="tblStaffPerf"><thead><tr><th>Nhân viên</th><th>Đơn</th><th>Rating TB</th></tr></thead><tbody></tbody></table>
+          </div>
+        </div>
+      </section>
+
+      <!-- CALENDAR TAB -->
+      <section id="tab-calendar" style="display:none">
+        <div class="panel">
+          <div class="toolbar">
+            <h3>Lịch tuần</h3>
+            <div class="actions">
+              <button class="btn ghost" id="prevWeek">◀</button>
+              <button class="btn ghost" id="nextWeek">▶</button>
+            </div>
+          </div>
+          <div class="calendar" id="calendar"></div>
+        </div>
+      </section>
+
+      <!-- BOOKINGS TAB -->
+      <section id="tab-bookings" style="display:none">
+        <div class="panel">
+          <div class="toolbar">
+            <h3>Quản lý đặt lịch</h3>
+            <input class="input" placeholder="Tìm theo tên/điện thoại..." id="searchBooking" />
+          </div>
+          <table id="tblBookings"><thead><tr><th>Khách</th><th>Dịch vụ</th><th>Thời gian</th><th>Giá</th><th>Trạng thái</th><th>Hành động</th></tr></thead><tbody></tbody></table>
+        </div>
+      </section>
+
+      <!-- SERVICES TAB -->
+      <section id="tab-services" style="display:none">
+        <div class="panel">
+          <div class="toolbar">
+            <h3>Dịch vụ của spa</h3>
+            <div class="actions"><button class="btn primary" id="btnAddService">+ Thêm dịch vụ</button></div>
+          </div>
+          <table id="tblServices"><thead><tr><th>Tên dịch vụ</th><th>Thời lượng</th><th>Giá</th><th></th></tr></thead><tbody></tbody></table>
+        </div>
+      </section>
+
+      <!-- STAFF TAB -->
+      <section id="tab-staff" style="display:none">
+        <div class="panel">
+          <div class="toolbar">
+            <h3>Nhân viên</h3>
+            <button class="btn primary" id="btnAddStaff">+ Thêm nhân viên</button>
+          </div>
+          <table id="tblStaff"><thead><tr><th>Tên</th><th>Kỹ năng</th><th>Tr���ng thái</th><th></th></tr></thead><tbody></tbody></table>
+        </div>
+      </section>
+
+      <!-- REVIEWS TAB -->
+      <section id="tab-reviews" style="display:none">
+        <div class="panel">
+          <div class="toolbar"><h3>Đánh giá từ khách hàng</h3></div>
+          <table id="tblReviews"><thead><tr><th>Khách</th><th>Rating</th><th>Nội dung</th><th>Ngày</th><th>Hành động</th></tr></thead><tbody></tbody></table>
+        </div>
+      </section>
+
+      <!-- CUSTOMERS TAB -->
+      <section id="tab-customers" style="display:none">
+        <div class="panel">
+          <div class="toolbar"><h3>Khách hàng & Loyalty</h3></div>
+          <table id="tblCustomers"><thead><tr><th>Tên</th><th>SĐT</th><th>Lần đặt</th><th>Hạng</th></tr></thead><tbody></tbody></table>
+        </div>
+      </section>
+
+      <!-- COUPONS TAB -->
+      <section id="tab-coupons" style="display:none">
+        <div class="panel">
+          <div class="toolbar"><h3>Mã ưu đãi</h3><button class="btn primary" id="btnAddCoupon">+ Tạo mã</button></div>
+          <table id="tblCoupons"><thead><tr><th>Mã</th><th>Loại</th><th>Giá trị</th><th>Hiệu lực</th><th></th></tr></thead><tbody></tbody></table>
+        </div>
+      </section>
+
+      <!-- SETTINGS TAB -->
+      <section id="tab-settings" style="display:none">
+        <div class="panel">
+          <h3>Thông tin Spa</h3>
+          <div class="grid2">
+            <label>Tên spa<input class="input" id="inpSpaName"></label>
+            <label>Trạng thái<select class="select" id="selSpaStatus"><option value="active">Đang hoạt động</option><option value="paused">Tạm nghỉ</option></select></label>
+            <label>Địa chỉ<textarea class="input" id="inpSpaAddr" rows="3"></textarea></label>
+            <label>Số điện thoại<input class="input" id="inpSpaPhone"></label>
+          </div>
+          <div class="actions" style="margin-top:10px"><button class="btn primary" id="btnSaveSpa">Lưu thay đổi</button><button class="btn ghost" id="btnDeleteSpa">Xóa spa</button></div>
+          <p class="muted" style="margin-top:8px">Sau khi lưu, hệ thống sẽ gửi <strong>thông báo cho Admin</strong> để kiểm duyệt (tham khảo mô tả).</p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+  // ======= MOCK DATA (thay bằng API backend sau) =======
+  const db = {
+    spas:[
+      {id:1,name:'Aki Beauty Spa', status:'active', address:'301 Đội Cấn, Ba Đình, Hà Nội', phone:'096 790 0530'},
+      {id:2,name:'Nàng Charming', status:'paused', address:'207 Hoàng Cầu, Đống Đa, Hà Nội', phone:'098 222 0000'}
+    ],
+    services:{1:[
+      {id:11,name:'Massage Việt Nam cổ truyền', duration:60, price:600000},
+      {id:12,name:'Massage Shiatsu Nhật Bản', duration:60, price:750000},
+      {id:13,name:'Massage đá nóng', duration:60, price:750000}
+    ],2:[{id:21,name:'Gội đầu dưỡng sinh', duration:45, price:250000}]},
+    staff:{1:[
+      {id:101,name:'Lan', skills:'Massage, Shiatsu', active:true, rating:4.8, orders:120},
+      {id:102,name:'Mai', skills:'Massage đá nóng', active:true, rating:4.6, orders:98},
+      {id:103,name:'Huyền', skills:'Facial', active:false, rating:4.5, orders:40}
+    ],2:[{id:201,name:'Thúy', skills:'Hair wash', active:true, rating:4.7, orders:60}]},
+    bookings:{1:[
+      {id:5001, customer:'Nguyễn An', phone:'0901', service:'Shiatsu Nhật Bản', time:'2025-09-18 10:00', price:750000, status:'pending'},
+      {id:5002, customer:'Trần Vũ', phone:'0902', service:'VN cổ truyền', time:'2025-09-18 11:30', price:600000, status:'confirmed'},
+      {id:5003, customer:'Phạm Hoa', phone:'0903', service:'Đá nóng', time:'2025-09-18 14:00', price:750000, status:'completed'}
+    ],2:[{id:6001, customer:'Minh', phone:'0904', service:'Dưỡng sinh', time:'2025-09-19 09:30', price:250000, status:'pending'}]},
+    reviews:{1:[
+      {id:9001, name:'An', rating:5, text:'Rất thư giãn!', date:'2025-09-10'},
+      {id:9002, name:'Hoa', rating:4, text:'Nhân vi��n thân thiện', date:'2025-09-12'}
+    ],2:[{id:9003,name:'Bình', rating:3, text:'Ổn', date:'2025-09-14'}]},
+    customers:{1:[
+      {name:'An', phone:'0901', count:6, rank:'gold'},
+      {name:'Vũ', phone:'0902', count:3, rank:'member'},
+      {name:'Hoa', phone:'0903', count:10, rank:'diamond'}
+    ],2:[{name:'Minh', phone:'0904', count:2, rank:'member'}]},
+    coupons:{1:[{code:'AKI10', type:'percent', value:10, range:'01-30/09'}],2:[{code:'NC20', type:'percent', value:20, range:'15-30/09'}]},
+    revenue:{1:{months:["01","02","03","04","05","06","07","08","09","10","11","12"], rev:[40,46,50,55,60,64,70,80,88,0,0,0], prof:[18,20,22,24,26,28,30,36,40,0,0,0]}, 2:{months:["01","02","03","04","05","06","07","08","09","10","11","12"], rev:[12,14,16,18,20,22,26,28,30,0,0,0], prof:[5,6,7,8,9,10,12,13,14,0,0,0]}}
+  };
+
+  let currentSpaId = db.spas[0].id;
+
+  // ======= INIT =======
+  const spaSelect = document.getElementById('spaSelect');
+  function refreshSpaOptions(){
+    spaSelect.innerHTML = db.spas.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
+    document.getElementById('spaCount').textContent = db.spas.length;
+    spaSelect.value = currentSpaId;
+  }
+
+  function fmtMoney(v){return new Intl.NumberFormat('vi-VN').format(v)+" VND"}
+
+  function populateDashboard(){
+    const spa = db.spas.find(s=>s.id==currentSpaId);
+    document.getElementById('spaName').textContent = spa.name;
+    document.getElementById('spaAddr').textContent = spa.address;
+    const badge = document.getElementById('spaStatus');
+    if (spa.status==='active'){badge.textContent='Đang hoạt động';badge.className='badge live'} else {badge.textContent='Tạm nghỉ';badge.className='badge pause'}
+
+    const stat = db.revenue[currentSpaId];
+    const revThis = stat.rev[8]||0; // tháng 9
+    const profThis = stat.prof[8]||0;
+    document.getElementById('mRevenue').textContent = fmtMoney(revThis*1000000);
+    document.getElementById('mProfit').textContent = fmtMoney(profThis*1000000);
+    const monthBookings = (db.bookings[currentSpaId]||[]).length;
+    document.getElementById('mBookings').textContent = monthBookings;
+    const returning = (db.customers[currentSpaId]||[]).filter(c=>c.count>=2).length;
+    document.getElementById('mReturning').textContent = returning;
+
+    // tables
+    const topBody = document.querySelector('#tblTopServices tbody');
+    const byService = {};
+    (db.bookings[currentSpaId]||[]).forEach(b=>{byService[b.service]=(byService[b.service]||{count:0, sum:0});byService[b.service].count++;byService[b.service].sum+=b.price;});
+    topBody.innerHTML = Object.entries(byService).map(([name,o])=>`<tr><td>${name}</td><td>${o.count}</td><td>${fmtMoney(o.sum)}</td></tr>`).join('')||'<tr><td colspan=3 class="muted">Chưa có dữ liệu</td></tr>';
+
+    const perfBody = document.querySelector('#tblStaffPerf tbody');
+    perfBody.innerHTML = (db.staff[currentSpaId]||[]).map(s=>`<tr><td>${s.name}</td><td>${s.orders}</td><td>${s.rating.toFixed(1)}</td></tr>`).join('')||'<tr><td colspan=3 class="muted">Chưa có dữ liệu</td></tr>';
+
+    // chart
+    const ctx = document.getElementById('chartRevenue');
+    if(window._chart){window._chart.destroy();}
+    window._chart = new Chart(ctx,{type:'bar', data:{labels:stat.months, datasets:[{label:'Doanh thu (triệu)', data:stat.rev, borderWidth:1},{label:'Lợi nhuận (triệu)', data:stat.prof, borderWidth:1}]}, options:{responsive:true, scales:{y:{beginAtZero:true}}}});
+  }
+
+  function renderServices(){
+    const body = document.querySelector('#tblServices tbody');
+    const arr = db.services[currentSpaId]||[];
+    body.innerHTML = arr.map(s=>`<tr><td>${s.name}</td><td>${s.duration} phút</td><td>${fmtMoney(s.price)}</td><td><button class='btn ghost' onclick='editService(${s.id})'>Sửa</button> <button class='btn' style='background:var(--danger);color:#fff' onclick='delService(${s.id})'>Xóa</button></td></tr>`).join('');
+  }
+  function renderStaff(){
+    const body = document.querySelector('#tblStaff tbody');
+    const arr = db.staff[currentSpaId]||[];
+    body.innerHTML = arr.map(s=>`<tr><td>${s.name}</td><td>${s.skills}</td><td>${s.active?'<span class="badge live">Active</span>':'<span class="badge pause">Inactive</span>'}</td><td><button class='btn ghost' onclick='editStaff(${s.id})'>Sửa</button> <button class='btn' style='background:var(--danger);color:#fff' onclick='delStaff(${s.id})'>Xóa</button></td></tr>`).join('');
+  }
+  function renderBookings(){
+    const body = document.querySelector('#tblBookings tbody');
+    const q = document.getElementById('searchBooking').value?.toLowerCase()||'';
+    const arr = (db.bookings[currentSpaId]||[]).filter(b=> (b.customer+b.phone).toLowerCase().includes(q));
+    body.innerHTML = arr.map(b=>`<tr><td>${b.customer} (${b.phone})</td><td>${b.service}</td><td>${b.time}</td><td>${fmtMoney(b.price)}</td><td>${b.status}</td><td><button class='btn primary' onclick='confirmBooking(${b.id})'>Xác nhận</button> <button class='btn' style='background:var(--warning);color:#fff' onclick='cancelBooking(${b.id})'>Hủy</button></td></tr>`).join('');
+  }
+  function renderReviews(){
+    const body = document.querySelector('#tblReviews tbody');
+    body.innerHTML = (db.reviews[currentSpaId]||[]).map(r=>`<tr><td>${r.name}</td><td>★ ${r.rating}</td><td>${r.text}</td><td>${r.date}</td><td><button class='btn ghost' onclick='replyReview(${r.id})'>Trả lời</button> <button class='btn' style='background:var(--warning);color:#fff' onclick='reportReview(${r.id})'>Báo cáo</button></td></tr>`).join('');
+  }
+  function renderCustomers(){
+    const body = document.querySelector('#tblCustomers tbody');
+    body.innerHTML = (db.customers[currentSpaId]||[]).map(c=>`<tr><td>${c.name}</td><td>${c.phone}</td><td>${c.count}</td><td><span class='rank ${c.rank}'>${c.rank}</span></td></tr>`).join('');
+  }
+  function renderCoupons(){
+    const body = document.querySelector('#tblCoupons tbody');
+    body.innerHTML = (db.coupons[currentSpaId]||[]).map(c=>`<tr><td>${c.code}</td><td>${c.type}</td><td>${c.value}</td><td>${c.range}</td><td><button class='btn ghost' onclick='editCoupon("${c.code}")'>Sửa</button> <button class='btn' style='background:var(--danger);color:#fff' onclick='delCoupon("${c.code}")'>Xóa</button></td></tr>`).join('');
+  }
+
+  // Calendar simple render (Mon-Sun 8:00-18:00)
+  const days = ['CN','T2','T3','T4','T5','T6','T7'];
+  function renderCalendar(){
+    const cal = document.getElementById('calendar');
+    cal.innerHTML = '';
+    // header
+    cal.insertAdjacentHTML('beforeend', `<div class='cal-head'><div></div>${days.map(d=>`<div>${d}</div>`).join('')}</div>`);
+    for(let h=8; h<=18; h++){
+      cal.insertAdjacentHTML('beforeend', `<div class='cal-time'>${String(h).padStart(2,'0')}:00</div>${days.map(()=>`<div class='slot'></div>`).join('')}`);
+    }
+    // demo events from bookings of current spa on T4 10:00 etc.
+    const slots = cal.querySelectorAll('.slot');
+    const demo = (db.bookings[currentSpaId]||[]);
+    if (demo[0]){ const i = 1*7 + 2; slots[i].innerHTML = `<div class='event'>${demo[0].customer}<br/><small>${demo[0].service}</small></div>`; }
+  }
+
+  // ======= NAV =======
+  document.getElementById('sideNav').addEventListener('click', (e)=>{
+    if(e.target.closest('button')){
+      const tab = e.target.closest('button').dataset.tab;
+      document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
+      e.target.closest('button').classList.add('active');
+      document.querySelectorAll('[id^=tab-]').forEach(x=>x.style.display='none');
+      document.getElementById('tab-'+tab).style.display='block';
+    }
+  });
+
+  // ======= ACTIONS =======
+  spaSelect.addEventListener('change',()=>{currentSpaId=parseInt(spaSelect.value);populateDashboard();renderServices();renderStaff();renderBookings();renderReviews();renderCustomers();renderCoupons();renderCalendar();});
+  document.getElementById('btnToggleStatus').onclick = ()=>{const spa=db.spas.find(s=>s.id==currentSpaId); spa.status = spa.status==='active'?'paused':'active'; populateDashboard();};
+  document.getElementById('searchBooking').oninput = renderBookings;
+
+  // CRUD stubs (replace with backend)
+  window.editService = id=>alert('Sửa dịch vụ #'+id);
+  window.delService = id=>{db.services[currentSpaId]= (db.services[currentSpaId]||[]).filter(s=>s.id!==id);renderServices();};
+  document.getElementById('btnAddService').onclick = ()=>{const name=prompt('Tên dịch vụ?'); if(!name) return; (db.services[currentSpaId]||=[]).push({id:Math.random(),name,duration:60,price:300000}); renderServices();};
+
+  window.editStaff = id=>alert('Sửa nhân viên #'+id);
+  window.delStaff = id=>{db.staff[currentSpaId]= (db.staff[currentSpaId]||[]).filter(s=>s.id!==id);renderStaff();};
+  document.getElementById('btnAddStaff').onclick = ()=>{const name=prompt('Tên nhân viên?'); if(!name) return; (db.staff[currentSpaId]||=[]).push({id:Math.random(),name,skills:'Massage',active:true,rating:4.5,orders:0}); renderStaff();};
+
+  window.confirmBooking = id=>{const b=(db.bookings[currentSpaId]||[]).find(x=>x.id===id); if(b){b.status='confirmed'; renderBookings();}};
+  window.cancelBooking = id=>{const b=(db.bookings[currentSpaId]||[]).find(x=>x.id===id); if(b){b.status='cancelled'; renderBookings();}};
+
+  window.replyReview = id=>alert('Trả lời review #'+id);
+  window.reportReview = id=>alert('Báo cáo review #'+id+' -> gửi Admin');
+
+  document.getElementById('btnAddCoupon').onclick = ()=>{const code=prompt('Mã?'); if(!code) return; (db.coupons[currentSpaId]||=[]).push({code,type:'percent',value:10,range:'Từ hôm nay'}); renderCoupons();};
+  window.editCoupon = code=>alert('Sửa mã '+code);
+  window.delCoupon = code=>{db.coupons[currentSpaId]= (db.coupons[currentSpaId]||[]).filter(c=>c.code!==code); renderCoupons();};
+
+  // Settings
+  document.getElementById('btnSaveSpa').onclick = ()=>{const s=db.spas.find(x=>x.id==currentSpaId); s.name=inpSpaName.value; s.address=inpSpaAddr.value; s.phone=inpSpaPhone.value; s.status=selSpaStatus.value==='active'?'active':'paused'; alert('Đã lưu & gửi thông báo tới Admin để duyệt (demo)'); refreshSpaOptions(); populateDashboard();};
+  document.getElementById('btnDeleteSpa').onclick = ()=>{if(!confirm('Xóa spa hiện tại?')) return; db.spas = db.spas.filter(s=>s.id!=currentSpaId); currentSpaId = db.spas[0]?.id; refreshSpaOptions(); populateDashboard(); renderServices(); renderStaff(); renderBookings(); renderReviews(); renderCustomers(); renderCoupons(); renderCalendar();};
+
+  // INIT LOAD
+  refreshSpaOptions();
+  // prefill settings form
+  const inpSpaName=document.getElementById('inpSpaName');
+  const inpSpaAddr=document.getElementById('inpSpaAddr');
+  const inpSpaPhone=document.getElementById('inpSpaPhone');
+  const selSpaStatus=document.getElementById('selSpaStatus');
+  function syncSettings(){const s=db.spas.find(x=>x.id==currentSpaId); inpSpaName.value=s.name; inpSpaAddr.value=s.address; inpSpaPhone.value=s.phone; selSpaStatus.value=s.status==='active'?'active':'paused';}
+
+  populateDashboard(); renderServices(); renderStaff(); renderBookings(); renderReviews(); renderCustomers(); renderCoupons(); renderCalendar(); syncSettings();
+  window.addEventListener('DOMContentLoaded', function() {
+  const btnLogout = document.getElementById('btnLogout');
+  if (btnLogout) {
+    btnLogout.addEventListener('click', function(e) {
+      e.preventDefault();
+      localStorage.removeItem('auth');
+      window.location.href = "index.html";
+    });
+  }
+});
+  </script>
+</body>
+</html>
